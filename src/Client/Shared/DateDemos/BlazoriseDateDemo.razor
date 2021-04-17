@@ -1,0 +1,39 @@
+﻿
+<style>
+    .dthighlight {
+        background-color: aquamarine !important;
+    }
+</style>
+
+
+
+<br />
+Blazorise doesn't offer a date range picker
+
+
+
+<br />
+This is a single date picker
+<DateEdit TValue="DateTime?" @bind-Date="@singleDatePickerDt" Placeholder="Enter Date" />
+
+
+<br />
+This is a single date picker with custom formatting (yyyy/MM/dd)
+
+
+<br />
+This control allows a min and max setting, but does not appear to support disallowing specific dates
+<DateEdit TValue="DateTime?" @bind-Date="@minMaxDatePickerDt" Min="DateTimeOffset.Now.AddDays(-1)" Max="DateTimeOffset.Now.AddDays(15)" />
+
+<br />
+There are different built in formats available, but custom formatting of specific dates is not available
+
+
+
+
+@code {
+
+    DateTime? singleDatePickerDt;
+    DateTime? minMaxDatePickerDt;
+
+}

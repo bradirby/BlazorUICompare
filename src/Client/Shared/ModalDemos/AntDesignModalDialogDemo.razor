@@ -1,0 +1,114 @@
+﻿@using AntDesign
+@using Client.Model
+
+
+<AntDesign.Button Type="primary" OnClick="@(()=>{ SimpleModalVisible = true; })">
+    Open Modal
+</AntDesign.Button>
+<AntDesign.Modal Title="Multiple OK Buttons" Visible="@SimpleModalVisible" OnOk="@HandleOkSimpleModal" OnCancel="@(()=>{ SimpleModalVisible = false; })">
+
+    This is my modal content
+
+</AntDesign.Modal>
+
+<br />
+<br />
+
+
+
+<AntDesign.Button Type="primary" OnClick="@(()=>{ SimpleFilmModalVisible = true; })">
+    Open Modal
+</AntDesign.Button>
+<AntDesign.Modal Title="Multiple OK Buttons" Visible="@SimpleFilmModalVisible" OnOk="@HandleOkSimpleFilmModal" OnCancel="@(()=>{ SimpleFilmModalVisible = false; })">
+
+    <DialogDisplayRow CurrentFilm="Film1" RowSelected="OnSimpleFilmModalRowSelected"></DialogDisplayRow>
+    <DialogDisplayRow CurrentFilm="Film2" RowSelected="OnSimpleFilmModalRowSelected"></DialogDisplayRow>
+    <DialogDisplayRow CurrentFilm="Film3" RowSelected="OnSimpleFilmModalRowSelected"></DialogDisplayRow>
+
+</AntDesign.Modal>
+Selected Film:
+<label>@SelectedFilmSimpleModal.Title</label>
+
+<br />
+<br />
+
+<AntDesign.Button Type="primary" OnClick="@(() => CustomFooterModalVisible = true)">
+    Open Modal with customized footer
+</AntDesign.Button>
+@{
+    RenderFragment footer = @<Template>
+        @*<AntDesign.Button OnClick="@HandleOkCustomizedFooter" @key="@( "submit" )" Type="primary" Loading="@_customFooterLoading">
+                Custom Submit Button
+            </AntDesign.Button>*@
+        <AntDesign.Button OnClick="@(() => CustomFooterModalVisible = false)" @key="@( "back" )">Custom Cancel</AntDesign.Button>
+    </Template>;
+}
+<AntDesign.Modal Title="Customized Footer"
+                 Visible="@CustomFooterModalVisible"
+                 OnOk="@HandleOkCustomizedFooter"
+                 OnCancel="@(() => CustomFooterModalVisible = false)"
+                 Footer="@footer">
+
+    <DialogDisplayRow CurrentFilm="Film1" RowSelected="OnCustomFooterModalRowSelected"></DialogDisplayRow>
+    <DialogDisplayRow CurrentFilm="Film2" RowSelected="OnCustomFooterModalRowSelected"></DialogDisplayRow>
+    <DialogDisplayRow CurrentFilm="Film3" RowSelected="OnCustomFooterModalRowSelected"></DialogDisplayRow>
+
+</AntDesign.Modal>
+Selected Film:
+<label>@SelectedFilmCustomFooterModal.Title</label>
+
+
+
+
+@code {
+    //https://antblazor.com/en-US/components/modal
+
+    public Film Film1 { get; set; } = new Film() { Title = "Film1" };
+    public Film Film2 { get; set; } = new Film() { Title = "Film2" };
+    public Film Film3 { get; set; } = new Film() { Title = "Film3" };
+
+    public Film SelectedFilmSimpleModal { get; set; } = new Film() { Title = "Initial Simple Film" };
+    public Film SelectedFilmCustomFooterModal { get; set; } = new Film() { Title = "Initial Custom Footer Film" };
+
+
+    bool SimpleModalVisible = false;
+    bool SimpleFilmModalVisible = false;
+    bool CustomFooterModalVisible = false;
+
+    bool _simpleFilmModalLoading = false;
+    bool _customFooterLoading = false;
+
+    private async Task HandleOkSimpleModal(MouseEventArgs e)
+    {
+        SimpleFilmModalVisible = false;
+    }
+
+    private async Task HandleOkSimpleFilmModal(MouseEventArgs e)
+    {
+        SimpleFilmModalVisible = false;
+    }
+
+    private async Task HandleOkCustomizedFooter(MouseEventArgs e)
+    {
+        CustomFooterModalVisible = false;
+    }
+
+    [Parameter] public EventCallback DoorStyleChanged { get; set; }
+
+    private async Task OnSimpleFilmModalRowSelected(Film e)
+    {
+        SelectedFilmSimpleModal = e;
+        SimpleFilmModalVisible = false;
+    }
+
+    private async Task OnCustomFooterModalRowSelected(Film e)
+    {
+        SelectedFilmCustomFooterModal = e;
+        CustomFooterModalVisible = false;
+    }
+}
+
+
+
+
+

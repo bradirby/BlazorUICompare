@@ -1,0 +1,62 @@
+﻿@using Client.Model
+@using Sotsera.Blazor.Toaster
+  Grid showing internal form editor created by the grid.  The form to use is not user definable
+<DataGrid TItem="Film"
+          Data="@FormGridFilms"
+          UseInternalEditing="true"
+          EditMode="DataGridEditMode.Form"
+          ShowPager="false"
+          Editable="true"
+          Hoverable="true"
+          SelectedRow="SelectedFormGridFilm"
+          PageSize="5">
+    <DataGridCommandColumn TItem="Film" Width="250px">
+        <NewCommandTemplate>
+            <Blazorise.Button Color="Color.Success" Clicked="@context.Clicked"><i class="fa fa-asterisk" aria-hidden="true"></i></Blazorise.Button>
+        </NewCommandTemplate>
+        <EditCommandTemplate>
+            <Blazorise.Button Color="Color.Primary" Clicked="@context.Clicked"><i class="fa fa-edit" aria-hidden="true"></i></Blazorise.Button>
+        </EditCommandTemplate>
+        <SaveCommandTemplate>
+            <Blazorise.Button Color="Color.Primary" Clicked="@context.Clicked"><i class="fa fa-save" aria-hidden="true"></i></Blazorise.Button>
+        </SaveCommandTemplate>
+        <DeleteCommandTemplate>
+            <Blazorise.Button Color="Color.Danger" Clicked="@context.Clicked"><i class="fa fa-times" aria-hidden="true"></i></Blazorise.Button>
+        </DeleteCommandTemplate>
+        <CancelCommandTemplate>
+            <Blazorise.Button Color="Color.Secondary" Clicked="@context.Clicked">Cancel</Blazorise.Button>
+        </CancelCommandTemplate>
+        <ClearFilterCommandTemplate>
+            <Blazorise.Button Color="Color.Warning" Clicked="@context.Clicked">Clear Filter</Blazorise.Button>
+        </ClearFilterCommandTemplate>
+    </DataGridCommandColumn>
+    <DataGridColumn TItem="Film" Field="@nameof(Film.Title)" Caption="Title" TextAlignment="TextAlignment.Center" Sortable="true" Editable="true" Width="20" />
+    <DataGridNumericColumn TItem="Film" Field="@nameof(Film.CriticScore)" Caption="Critic Score" TextAlignment="TextAlignment.Center" Sortable="true" Editable="false" Width="20" DisplayFormat="{0:N0}" />
+    <DataGridDateColumn TItem="Film" Field="@nameof(Film.ReleaseDate)" Caption="Release Date" Editable="true" Sortable="true" />
+    <DataGridCheckColumn TItem="Film" Field=@nameof(Film.IsProfitable) Caption="Is Profitable" Editable="false" Sortable="true">
+        <DisplayTemplate>
+            <Check TValue="bool" Checked="context.IsProfitable" ReadOnly="false" @onclick="@(()=> { context.IsProfitable = !context.IsProfitable;  })" />
+        </DisplayTemplate>
+    </DataGridCheckColumn>
+
+
+</DataGrid>
+
+@code {
+    public IEnumerable<Film> FormGridFilms { get; set; }
+    public Film SelectedFormGridFilm { get; set; }
+
+    public List<Genre> Genres { get; set; }
+    [Inject] protected IToaster Toaster { get; set; }
+
+    protected override Task OnInitializedAsync()
+    {
+        Genres = Genre.GetNewList();
+
+        FormGridFilms = Film.GetNewList(Genres);
+        foreach (var f in FormGridFilms) f.Title = $"FormGrid {f.Title}";
+
+        SelectedFormGridFilm = FormGridFilms.First();
+        return base.OnInitializedAsync();
+    }
+}

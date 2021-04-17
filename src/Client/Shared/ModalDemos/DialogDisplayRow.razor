@@ -1,0 +1,23 @@
+﻿@using Client.Model
+@using DocumentFormat.OpenXml.Drawing
+
+
+    <input type="text" id="name" value=@CurrentFilm.Title />
+
+     <button @onclick=HandleSelect>Select film and close dialog</button>
+
+@code {
+
+    [Parameter]
+    public Film CurrentFilm { get; set; }
+
+    [Parameter]
+    public EventCallback<Film> RowSelected{ get; set; }
+
+
+    private void HandleSelect()
+    {
+        RowSelected.InvokeAsync(CurrentFilm);  
+    }
+
+}

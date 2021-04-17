@@ -1,0 +1,124 @@
+﻿AntDesign is an open source control set for Blazor.
+@using AntDesign
+
+<br />
+<br />
+This is a simple select
+<AntDesign.Select Style="width:120px;"
+                  DataSource="@SimpleSelectOptionList"
+                  @bind-Value="@_selectedValue"
+                  LabelName="@nameof(MyGenericLookupClass<int>.DisplayValue)"
+                  ValueName="@nameof(MyGenericLookupClass<int>.KeyValue)"
+                  EnableSearch
+                  OnBlur="OnBlur"
+                  OnFocus="OnFocus"
+                  OnSelectedItemChanged="OnSelectedItemChangedHandler"
+                  OnSearch="OnSearch">
+</AntDesign.Select>
+    Selected Value: @_selectedValue 
+    Selected Item Name: '@_selectedItem?.DisplayValue'
+
+<br />
+<br />
+
+Cascading Select with Mandatory Values
+<AntDesign.Select DataSource="@States"
+                  @bind-Value="@SelectedStateId"
+                  ValueName="@nameof(State.Id)"
+                  LabelName="@nameof(State.Name)"
+                  Style="width: 200px"
+                  Placeholder="Select a State"
+                  DefaultActiveFirstItem="true" @*This does not work*@
+                  OnSelectedItemChanged="OnSelectedStateChangedHandler">
+</AntDesign.Select>
+<AntDesign.Select DataSource="@Cities"
+                  @bind-Value="@SelectedCityId"
+                  ValueName="@nameof(City.Id)"
+                  LabelName="@nameof(City.Name)"
+                  Style="width: 200px"
+                  DefaultActiveFirstItem="true" @*This does not work*@
+                  OnDataSourceChanged="OnCityDataSourceChangedHandler"
+                  Placeholder="Select a city">
+</AntDesign.Select>
+    Selected State ID: @SelectedStateId
+    Selected City ID: @SelectedCityId
+    <br />
+    <br />
+
+    @code {
+        private List<MyGenericLookupClass<int>> SimpleSelectOptionList { get; set; }
+        int _selectedValue;
+        MyGenericLookupClass<int> _selectedItem;
+
+        private List<State> States;
+        private List<City> Cities;
+        private int? SelectedCityId;
+        private int? SelectedStateId;
+
+        private void OnSelectedItemChangedHandler(MyGenericLookupClass<int> value)
+        {
+            _selectedItem = value;
+            Console.WriteLine($"selected: ${value?.DisplayValue}");
+        }
+
+        private void OnBlur()
+        {
+            Console.WriteLine("blur");
+        }
+
+        private void OnFocus()
+        {
+            Console.WriteLine("focus");
+        }
+
+        private void OnSearch(string value)
+        {
+            Console.WriteLine($"search: {value}");
+        }
+
+        private void OnCityDataSourceChangedHandler()
+        {
+            if (Cities != null)
+            {
+                SelectedCityId = Cities.First().Id;
+                Console.WriteLine($"Setting default city ");
+            }
+        }
+
+        private void OnSelectedStateChangedHandler(State value)
+        {
+            if (value != null)
+            {
+                Cities = value.Cities;
+                Console.WriteLine($"Setting city select list ");
+            }
+        }
+
+        protected override void OnInitialized()
+        {
+            SimpleSelectOptionList = new List<MyGenericLookupClass<int>>();
+            SimpleSelectOptionList.Add(new MyGenericLookupClass<int>() { KeyValue = 1, DisplayValue = "label aa 1" });
+            SimpleSelectOptionList.Add(new MyGenericLookupClass<int>() { KeyValue = 2, DisplayValue = "label aa 2" });
+            SimpleSelectOptionList.Add(new MyGenericLookupClass<int>() { KeyValue = 3, DisplayValue = "label aa 3" });
+            SimpleSelectOptionList.Add(new MyGenericLookupClass<int>() { KeyValue = 4, DisplayValue = "label bb 4" });
+            SimpleSelectOptionList.Add(new MyGenericLookupClass<int>() { KeyValue = 5, DisplayValue = "label bb 5" });
+            SimpleSelectOptionList.Add(new MyGenericLookupClass<int>() { KeyValue = 6, DisplayValue = "label cc 6" });
+
+            States = State.GetList();
+            SelectedStateId = States.Last().Id;
+
+            Cities = States.Last().Cities;
+            SelectedCityId = States.Last().Cities.Last().Id;
+
+
+            _selectedValue = 3;
+
+        }
+
+
+        void handleChange(string value)
+        {
+            Console.WriteLine(value);
+        }
+
+    }

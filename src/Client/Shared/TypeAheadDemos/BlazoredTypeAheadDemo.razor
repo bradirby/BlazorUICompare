@@ -1,0 +1,54 @@
+﻿@using Blazored.Typeahead
+@using Client.Model
+
+
+<BlazoredTypeahead SearchMethod="SearchForOption" ConvertMethod="ConvertPerson" @bind-Value=SelectedCodeInternal>
+    <SelectedTemplate Context="selCode">
+        @{
+            var selectedCode = LookupOptions.FirstOrDefault(p => p.Code == selCode);
+            <text>@selectedCode?.Description </text>
+        }
+    </SelectedTemplate>
+    <ResultTemplate Context="selItem">
+        @selItem.Description (Id: @selItem.Code)
+    </ResultTemplate>
+</BlazoredTypeahead>
+internal value: @SelectedCode
+
+@code {
+
+    [Parameter]
+    public List<LookupCode> LookupOptions { get; set; }
+
+    [Parameter]
+    public EventCallback<int> SelectedCodeChanged { get; set; }
+
+    [Parameter]
+    public int SelectedCode { get; set; }
+
+    private int? SelectedCodeInternal
+    {
+        get => _selCode;
+        set
+        {
+            _selCode = (value.HasValue)?value.Value:0;
+            SelectedCodeChanged.InvokeAsync(_selCode);
+        }
+    }
+    private int _selCode;
+
+    protected override void OnInitialized()
+    {
+        SelectedCodeInternal = SelectedCode;
+    }
+
+
+    private async Task<IEnumerable<LookupCode>> SearchForOption(string searchText)
+    {
+        return await Task.FromResult(LookupOptions.Where(x => x.Description.ToLower().Contains(searchText.ToLower())).ToList());
+    }
+
+    private int? ConvertPerson(LookupCode arg) => arg?.Code ?? 0;
+
+
+}
