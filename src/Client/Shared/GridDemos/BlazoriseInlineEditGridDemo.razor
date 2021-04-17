@@ -1,0 +1,144 @@
+﻿@using Client.Model
+@using Sotsera.Blazor.Toaster
+Grid showing inline editor
+<DataGrid TItem="Film"
+          Data="@InlineGridFilms"
+          UseInternalEditing="true"
+          EditMode="DataGridEditMode.Inline"
+          ShowPager="false"
+          Editable="true"
+          Hoverable="true"
+          SelectedRow="SelectedInlineGridFilm"
+          SelectedRowChanged="InlineGridRowSelectHandler"
+          RowUpdated="InlineGridRowUpdatedHandler"
+          RowInserted="InlineGridRowInsertedHandler"
+          RowRemoving="InlineGridRowRemovedHandler"
+          PageSize="5">
+    <DataGridCommandColumn TItem="Film" Width="250px">
+        <NewCommandTemplate>
+            <Blazorise.Button Color="Color.Success" Clicked="@context.Clicked"><i class="fa fa-asterisk" aria-hidden="true"></i></Blazorise.Button>
+        </NewCommandTemplate>
+        <EditCommandTemplate>
+            <Blazorise.Button Color="Color.Primary" Clicked="@context.Clicked"><i class="fa fa-edit" aria-hidden="true"></i></Blazorise.Button>
+        </EditCommandTemplate>
+        <SaveCommandTemplate>
+            <Blazorise.Button Color="Color.Primary" Clicked="@context.Clicked"><i class="fa fa-save" aria-hidden="true"></i></Blazorise.Button>
+        </SaveCommandTemplate>
+        <DeleteCommandTemplate>
+            <Blazorise.Button Color="Color.Danger" Clicked="@context.Clicked"><i class="fa fa-times" aria-hidden="true"></i></Blazorise.Button>
+        </DeleteCommandTemplate>
+        <CancelCommandTemplate>
+            <Blazorise.Button Color="Color.Secondary" Clicked="@context.Clicked">Cancel</Blazorise.Button>
+        </CancelCommandTemplate>
+        <ClearFilterCommandTemplate>
+            <Blazorise.Button Color="Color.Warning" Clicked="@context.Clicked">Clear Filter</Blazorise.Button>
+        </ClearFilterCommandTemplate>
+    </DataGridCommandColumn>
+    <DataGridColumn TItem="Film" Field="@nameof(Film.Title)" Caption="Title" TextAlignment="TextAlignment.Center" Sortable="true" Editable="true" Width="20" />
+    <DataGridNumericColumn TItem="Film" Field="@nameof(Film.CriticScore)" Caption="Critic Score" TextAlignment="TextAlignment.Center" Sortable="true" Editable="false" Width="20" DisplayFormat="{0:N0}" />
+    <DataGridDateColumn TItem="Film" Field="@nameof(Film.ReleaseDate)" Caption="Release Date" Editable="true" Sortable="true" />
+    <DataGridCheckColumn TItem="Film" Field=@nameof(Film.IsProfitable) Caption="Is Profitable" Editable="false" Sortable="true">
+        <DisplayTemplate>
+            <Check TValue="bool" Checked="context.IsProfitable" ReadOnly="false" @onclick="@(()=> { context.IsProfitable = !context.IsProfitable;  })" />
+        </DisplayTemplate>
+    </DataGridCheckColumn>
+    <DataGridSelectColumn TItem="Film" Field=@nameof(Film.FilmGenre) Caption="Style" Width="50" Sortable="true" Editable="true">
+    </DataGridSelectColumn>
+
+
+    @*<DataGridSelectColumn TItem="DoorSetGridRowViewModel" Field="@nameof(DoorSetGridRowViewModel.DoorTypeName)" Caption="Type" Sortable="true" Editable="true" Width="50">
+                  <EditTemplate>
+                      <Select TValue="string" SelectedValue="@((string)( ( (CellEditContext)context ).CellValue ))" SelectedValueChanged="@(( v ) => ( (CellEditContext)context ).CellValue = v)">
+                          <SelectItem TValue="string" Value="null">All</SelectItem>
+                          @foreach (var item in DoorTypeOptions.Options)
+                          {
+                              <SelectItem TValue="string" Value="@item.ValueField">@item.ValueField</SelectItem>
+                          }
+                      </Select>
+                  </EditTemplate>
+              </DataGridSelectColumn>
+              <DataGridSelectColumn TItem="DoorSetGridRowViewModel" Field=@nameof(DoorSetGridRowViewModel.DoorStyleName) Caption="Style" Width="50" Sortable="true" Editable="true">
+                  <EditTemplate>
+                      <Select TValue="string" SelectedValue="@((string)( ( (CellEditContext)context ).CellValue ))" SelectedValueChanged="@(( v ) => ( (CellEditContext)context ).CellValue = v)">
+                          <SelectItem TValue="string" Value="null">All</SelectItem>
+                          @foreach (var item in DoorStyleOptions.Options)
+                          {
+                              <SelectGroup>@item.GroupName</SelectGroup>
+                              <SelectItem TValue="string" Value="@item.ValueField">@item.ValueField</SelectItem>
+                          }
+                      </Select>
+                  </EditTemplate>
+              </DataGridSelectColumn>
+            <DataGridNumericColumn TItem="DoorSetGridRowViewModel" Field=@nameof(DoorSetGridRowViewModel.Width) Caption="Width" Sortable="true" Editable="true" Width="40" DisplayFormat="{0:N4}"></DataGridNumericColumn>
+              <DataGridNumericColumn TItem="DoorSetGridRowViewModel" Field=@nameof(DoorSetGridRowViewModel.Height) Caption="Height" Sortable="true" Editable="true" Width="40" DisplayFormat="{0:N4}"></DataGridNumericColumn>
+        <DataGridSelectColumn TItem="DoorSetGridRowViewModel" Field=@nameof(DoorSetGridRowViewModel.PanelMaterialName) Caption="Panel" Sortable="true" Editable="true" Width="50">
+                <EditTemplate>
+                    <Select TValue="string" SelectedValue="@((string)( ( (CellEditContext)context ).CellValue ))" SelectedValueChanged="@(( v ) => ( (CellEditContext)context ).CellValue = v)">
+
+                        <SelectItem TValue="string" Value="null">All</SelectItem>
+                        @foreach (var item in PanelMaterialOptions.Options)
+                        {
+                            <SelectGroup>@item.GroupName</SelectGroup>
+                            <SelectItem TValue="string" Value="@item.ValueField">@item.ValueField</SelectItem>
+                        }
+                    </Select>
+                </EditTemplate>
+            </DataGridSelectColumn>*@
+
+</DataGrid>
+
+<FilmGridDetailForm CurrentFilm="SelectedInlineGridFilm"></FilmGridDetailForm>
+
+@code {
+
+    public IEnumerable<Film> InlineGridFilms { get; set; }
+    public Film SelectedInlineGridFilm { get; set; }
+
+    public List<Genre> Genres { get; set; }
+    [Inject] protected IToaster Toaster { get; set; }
+
+    protected override Task OnInitializedAsync()
+    {
+        Genres = Genre.GetNewList();
+
+        InlineGridFilms = Film.GetNewList(Genres);
+        foreach (var f in InlineGridFilms) f.Title = $"InlineGrid {f.Title}";
+
+        SelectedInlineGridFilm = InlineGridFilms.First();
+        return base.OnInitializedAsync();
+    }
+
+
+
+    public void InlineGridRowSelectHandler(Film args)
+    {
+        Toaster.Info($"InlineGridFilms Row Selected {args.Title}");
+
+        //if the RowSelectedHandler is defined, then you must manage the selected item manually, else it is automatic
+        //if you have multiple grid on the same page you must define all or none of the RowSelectHandlers - they interfere with each other
+        SelectedInlineGridFilm = args;
+    }
+
+    public void InlineGridRowRemovedHandler(CancellableRowChange<Film> e)
+    {
+        Toaster.Info($"Row Removed{e.Item.Title}");
+        var item = InlineGridFilms.FirstOrDefault(f => f.Id == e.Item.Id);
+        if (item == null) Toaster.Info($"InlineGridFilms Row is removed from source list");
+        else Toaster.Info("InlineGridFilms Row is still in the source list - it must be removed manually");
+    }
+
+    public void InlineGridRowInsertedHandler(SavedRowItem<Film, Dictionary<string, object>> e)
+    {
+        Toaster.Info($"Row Inserted{e.Item.Title}");
+        var item = InlineGridFilms.FirstOrDefault(f => f.Id == e.Item.Id);
+        if (item == null) Toaster.Info($"InlineGridFilms Row is not in source list - it must be added manually");
+        else Toaster.Info("InlineGridFilms Row is already in source list");
+
+    }
+
+
+    public void InlineGridRowUpdatedHandler(SavedRowItem<Film, Dictionary<string, object>> e)
+    {
+        Toaster.Info($"InlineGridFilms Row Updated {e.Item.Title}");
+    }
+}

@@ -1,0 +1,28 @@
+﻿@using Client.Model
+
+<EditForm Model="@CurrentFilm" OnValidSubmit="@HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <Microsoft.AspNetCore.Components.Forms.ValidationSummary />
+
+    <InputText id="name" @bind-Value="CurrentFilm.Title" />
+    
+    @if (ShowSubmitButton)
+    {
+        <button type="submit">Submit</button>
+    }
+</EditForm>
+
+@code {
+
+    [Parameter]
+    public Film CurrentFilm { get; set; }
+
+    [Parameter]
+    public bool ShowSubmitButton { get; set; } = true;
+
+    private void HandleValidSubmit()
+    {
+
+    }
+
+}

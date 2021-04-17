@@ -1,0 +1,49 @@
+﻿@using MatBlazor
+
+<style>
+    .dthighlight {
+        background-color: aquamarine !important;
+    }
+</style>
+
+
+
+<br />
+This is a date range picker
+
+
+
+<br />
+This is a single date picker
+<MatDatePicker @bind-Value="@SingleDatePickerDt"></MatDatePicker>
+
+<br />
+This is a single date picker with custom formatting (yyyy/MM/dd)
+
+
+<br />
+It allows different types of pickers, like Week, Month, Quarter, and Year
+
+
+<br />
+This control allows a min and max setting, but does not appear to support disallowing specific dates
+<MatDatePicker @bind-Value="MinMaxDatePickerDt" Minimum="@DateTime.Now.AddDays(-10)" Maximum="@DateTime.Now.AddDays(10)"></MatDatePicker>
+
+<br />
+There are different built in formats available, but custom formatting of specific dates is not available
+<MatDatePicker Label="With Label" TValue="DateTime"></MatDatePicker>
+<MatDatePicker Label="Dense" Dense="true" TValue="DateTime"></MatDatePicker>
+<MatDatePicker Label="Outlined" Outlined="true" TValue="DateTime"></MatDatePicker>
+<MatDatePicker Label="Required" Required="true" TValue="DateTime"></MatDatePicker>
+<MatDatePicker Label="Disabled" Disabled="true" TValue="DateTime"></MatDatePicker>
+
+
+
+
+@code {
+
+    public DateTime? SingleDatePickerDt { get; set; } = DateTime.Now.AddDays(-10);
+    public DateTime? MinMaxDatePickerDt { get; set; } = DateTime.Now.AddDays(-10);
+
+
+}

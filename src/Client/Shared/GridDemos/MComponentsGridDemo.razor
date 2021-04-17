@@ -1,0 +1,63 @@
+﻿@using MComponents.MGrid
+@using MComponents.MSelect
+@using MComponents.MForm
+@using Sotsera.Blazor.Toaster
+@using Client.Model
+
+
+
+<MGrid DataSource="Films"
+       EnableAdding="true"
+       EnableDeleting="true"
+       EnableEditing="true"
+       EnableExport="true"
+       EnableFilterRow="true"
+       EnableUserSorting="true"
+       HtmlTableClass="m-grid m-grid-striped m-grid-bordered m-grid-hover m-grid-sticky">
+    <MGridColumns>
+        <MGridColumn Property="@nameof(Film.ReleaseDate)" StringFormat="{0:dd.MM.yyyy}" />
+        <MGridColumn Property="@nameof(Film.Title)" />
+        <MGridColumn Property="@nameof(Film.CriticScore)" />
+        <MGridColumn Property="@nameof(Film.FilmGenre)" />
+
+        <MGridComplexPropertyColumn T="Film" Identifier="WeatherStation" TProperty="Genre" Property=@nameof(Film.FilmGenre)>
+            <FormTemplate Context="templContext">
+                <MSelect T="Genre"
+                         id=@templContext.InputId
+                         class="form-control"
+                         Property="@nameof(Genre.Code)"
+                         Options="Genres"
+                         Value="templContext.Value"
+                         ValueChanged="templContext.ValueChanged"
+                         ValueExpression="templContext.ValueExpression" />
+            </FormTemplate>
+            <CellTemplate Context="templContext">
+                @templContext?.FilmGenre?.Name
+            </CellTemplate>
+        </MGridComplexPropertyColumn>
+
+        <MGridActionColumn T="Film" />
+    </MGridColumns>
+
+    <MGridPager />
+
+</MGrid>
+
+
+<MFormContainer>
+    <MForm Model="Films.FirstOrDefault()" />
+</MFormContainer>
+
+
+@code {
+    private List<Film> Films;
+    private List<Genre> Genres { get; set; }
+
+    protected override Task OnInitializedAsync()
+    {
+        Genres = Genre.GetNewList();
+        Films = Film.GetNewList(Genres);
+        return base.OnInitializedAsync();
+    }
+
+}

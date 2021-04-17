@@ -1,0 +1,112 @@
+﻿@using BlazorDateRangePicker
+@using System.Threading
+
+<style>
+    .dthighlight {
+        background-color: aquamarine !important;
+    }
+</style>
+
+
+<br />
+This is a date range picker
+<DateRangePicker @bind-StartDate="DateRangePickerStartDate" @bind-EndDate="DateRangePickerEndDate" placeholder="Select dates..." />
+
+
+<br />
+This is a single date picker
+<DateRangePicker SingleDatePicker="true" @bind-StartDate="SingleDatePickerStartDate1" />
+
+<br />
+This is a single date picker with the month and year select boxes turned off
+<DateRangePicker @bind-StartDate="SingleDatePickerStartDate2" SingleDatePicker="true" ShowDropdowns="false" placeholder="Select dates..." />
+
+<br />
+Fixed start date
+<DateRangePicker  StartDate="FixedStartDate" @bind-EndDate="FixedEndDate"  placeholder="Fixed Start Date..." />
+
+
+<br />
+This is a custom format picker, and it was last opened @CustomFormatPickerOpenedString
+<DateRangePicker AutoApply="true" @ref="CustomFormatPicker" OnOpened="OnOpened" placeholder="(Select ship date)">
+    <PickerTemplate>
+        <div id="@context.Id" @onclick="context.Toggle" style="background: #fff; cursor: pointer; padding: .45rem 10px; border: 1px solid #ccc; border-radius: 5px;">
+            <i class="oi oi-calendar"></i>&nbsp;
+            <span>
+                @if (context.TStartDate == null && context.TEndDate == null)
+                {
+                    <span>Select date...</span>
+                }
+                else if (context.TStartDate != null && context.TEndDate == null)
+                {
+                    if (context.HoverDate > context.TStartDate)
+                    {
+                        @($"{context.TStartDate.Value.ToString(context.DateFormat)} ")
+                        @($" - ({(context.HoverDate.Value.Subtract(context.TStartDate.Value).Days).ToString()} days)")
+                    }
+                    else
+                    {
+                        <span>@context.TStartDate.Value.ToString("dd/MM/yyyy")</span>
+                    }
+                }
+                else
+                {
+                    <span>
+                        @context.FormattedRange @($" - ({(context.TEndDate.Value.Subtract(context.TStartDate.Value).Days).ToString()} days)")
+                    </span>
+                }
+            </span>
+            <i class="oi oi-chevron-bottom float-right"></i>
+        </div>
+    </PickerTemplate>
+</DateRangePicker>
+
+
+<br />
+Certain dates can be disabled, such as only allowing dates starting 3 days from today
+<DateRangePicker DaysEnabledFunction="DaysEnabledFunction" />
+
+<br />
+It can also highlight certain days, like if you are on vacation next week
+<DateRangePicker CustomDateFunction="CustomDateFunction" />
+
+
+
+
+@code {
+    public DateTimeOffset? SingleDatePickerStartDate1 { get; set; } = DateTime.Now;
+    public DateTimeOffset? SingleDatePickerStartDate2 { get; set; } = DateTime.Now;
+    public DateTimeOffset? DateRangePickerStartDate { get; set; } = DateTime.Now;
+    public DateTimeOffset? DateRangePickerEndDate { get; set; } = DateTime.Now.AddDays(15);
+    public string CustomFormatPickerOpenedString { get; set; } = "(never)";
+
+    DateRangePicker CustomFormatPicker { get; set; }
+    public DateTimeOffset FixedStartDate { get; } = DateTime.Now;
+    public DateTimeOffset? FixedEndDate { get; set; } = DateTime.Now.AddDays(15);
+
+    private void OnOpened()
+    {
+        CustomFormatPickerOpenedString = $"Opened {DateTime.Now}";
+    }
+
+    DateRangePicker Picker;
+
+
+    private bool DaysEnabledFunction(DateTimeOffset day)
+    {
+        return day.Date >= DateTime.Now.AddDays(3);
+    }
+
+    private object CustomDateFunction(DateTimeOffset day)
+    {
+        var daysUntilMonday = ((int)DayOfWeek.Monday - (int)DateTime.Today.DayOfWeek + 7) % 7;
+        var nextMonday = DateTime.Today.AddDays(daysUntilMonday);
+        var nextFriday = nextMonday.AddDays(5);
+
+        //return the style name desired - note the style at the top of this page
+        if (day.DateTime >= nextMonday && day.DateTime <= nextFriday) return "dthighlight";
+        return string.Empty;
+    }
+
+
+}
